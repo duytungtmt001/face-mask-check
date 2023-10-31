@@ -2,6 +2,10 @@ import './App.css';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import { useEffect, useRef, useState } from 'react';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
 
 
 const NOT_TOUCH_LABEL = "not_touch";
@@ -21,6 +25,7 @@ function App() {
     const [progress, setProgress] = useState(0);
     const [hidden, setHidden] = useState(false);
     const [active, setActive] = useState(false);
+    const [showNotify, setShowNotify] = useState(true);
     const descriptionList = [
         `Máy đang học... ${progress}%`,
         "Bước 1: Đeo khẩu trang và nhấn Bắt đầu để máy học nhé!",
@@ -39,9 +44,13 @@ function App() {
 
         classifier.current = knnClassifier.create();
 
-        mobilenetModule.current = await mobilenet.load();
+        MySwal.showLoading();
 
-        console.log("Setup done");
+        mobilenetModule.current = await mobilenet.load();
+        MySwal.hideLoading()
+        mobilenetModule.current && MySwal.fire({
+            title: "AI đã sẵn sàng rùi, let's start 😊"
+        })
     }
 
     const setupCamera = () => {
